@@ -1,0 +1,217 @@
+reference : https://stackblitz.com/edit/react-context-tutorial?file=index.js
+
+----------------------------------------------------------------------------------------------------------------------------
+
+data flow : App.js --> TshirtList.js --> Tshirt.js
+
+    on return of App.js, invoke TshirtList.js component
+
+----------------------------------------------------------------------------------------------------------------------------
+
+create TshirtList.js
+    snippet : rafc
+        import React from 'react'
+
+        export const TshirtList = () => {
+            return (
+                <div>
+                    
+                </div>
+            )
+        }
+    create mock data
+        const mockData = [
+            {name : "red-shirt", price : 10.99, id : 1},
+            {name : "yellow-hoddie", price : 24.99, id : 2},
+            {name : "blue-polo", price : 18.99, id : 3},
+        ]
+    on return, map on the mockData then pass all the attributes to Tshirt.js component
+        {
+            mockData.map(item => (
+                <Tshirt 
+                    key={item.id}
+                    name={item.name}
+                    id={item.id}
+                    price={item.price}
+                />
+            ))
+        }
+
+----------------------------------------------------------------------------------------------------------------------------
+
+create Tshirt.js
+    snippet : rafc
+        import React, { useContext } from 'react'
+
+        export const Tshirt = () => {
+            return (
+                <div>
+                    
+                </div>
+            )
+        }
+    display all the mock by using props as below
+        from : export const Tshirt = () => {.......}
+        to : export const Tshirt = (props) => {.......}
+        and on return : 
+            <h3>{props.name}</h3>
+            <h4>{props.price}</h4>
+    
+----------------------------------------------------------------------------------------------------------------------------
+
+error encountered :
+
+    index.js:1 Warning: Each child in a list should have a unique "key" prop.
+
+    Check the render method of `TshirtList`. See https://fb.me/react-warning-keys for more information.
+        in Tshirt (at TshirtList.js:19)
+        in TshirtList (at App.js:8)
+        in App (at src/index.js:9)
+        in StrictMode (at src/index.js:8)
+
+    solution :
+        must define key on where the .map is (TshirtList.js),
+            key={item.id}
+
+----------------------------------------------------------------------------------------------------------------------------
+
+data flow :
+
+    CartContext.js invokes CartContext (React.createContext()) & exports CartContextProvider with cart declared on it
+        in order for us to subscribe to the cart defined on CartContext.js 
+        we must encapsulate all the component inside it like below on App.js
+            <CartContextProvider>
+            <div>
+                    <TshirtList/>
+                    <hr/>
+                    <Cart/>
+            </div>
+            </CartContextProvider>
+        now we can use cart inside all the components like below :
+            //snippet : useCon
+            const [cart,setCart] = useContext(CartContext);
+        Tshirt.js (cause of the addToCart button) & Cart.js (where we display cart items and price) are subscribe to CartContext
+            Tshirt.js & Cart.js --> useContext(CartContext)
+        Tshirt.js will passed the name and price of the item thru addToCart which invoke setCart from CartContext
+        and the Cart.js also invokes the CartContext so there is wheere the passing of data happens
+            Tshirt.js (addToCart) --------> useContext(CartContext) -------> Cart.js
+
+----------------------------------------------------------------------------------------------------------------------------
+
+create CartContextProvider.js
+    snippet : rafc then add Provider on the name
+        import React from 'react'
+
+        export const CartContextProvider = () => {
+            return (
+                <div>
+                    
+                </div>
+            )
+        }
+    snippet : useS
+        const [cart, setCart] = useState([]);
+    snippet : enf the remove all the unneccessary things
+        from :
+        export const functionName = (params) => {
+            
+        }
+        to :
+        export const CartContext = React.createContext();
+    then on return, invoke CartContext as Provider and pass the cart & setCart as value property 
+        <div>
+            <CartContext.Provider value={[cart,setCart]}>
+            </CartContext.Provider>
+        </div>
+    also add props & {props.children} like below :
+        from : export const CartContextProvider = () => {.......
+        to : export const CartContextProvider = (props) => {.......
+        from :
+        <div>
+            <CartContext.Provider value={[cart,setCart]}>
+            </CartContext.Provider>
+        </div>
+        to :
+        <div>
+            <CartContext.Provider value={[cart,setCart]}>
+                     {props.children}
+            </CartContext.Provider>
+        </div>
+
+----------------------------------------------------------------------------------------------------------------------------
+
+create Cart.js
+    snippet : rafc
+        import React from 'react'
+
+        export const Cart = () => {
+            return (
+                <div>
+
+                </div>
+            )
+        }
+    invoke the CartContext and use reduce() method to calculate the total price on cart
+        //snippet : useCon
+        const [cart,setCart] = useContext(CartContext);
+        //cart contains name and price from addToCart thru CartContext
+        const totalPrice = cart.reduce((acc,curr) => acc + curr.price, 0)
+    on return, display the pieces of item on the cart & the total price
+        <div>
+            <h3>Cart</h3>
+            <span>
+                items in cart : {cart.length}
+            </span>
+            <br></br>
+            <span>
+                total price : {totalPrice}
+            </span>
+            <br></br>
+            {
+                // iterate on cart to dosplay the items
+                cart.map(items => (
+                <h5>{items.name} : {items.price}</h5>
+                ))
+            }
+        </div>
+
+----------------------------------------------------------------------------------------------------------------------------
+
+going back on App.js
+    on return, invoke the CartContextProvider & Cart like below :
+        <CartContextProvider>
+          <div>
+                 <TshirtList/>
+                 <hr/>
+                 <Cart/>
+          </div>
+        </CartContextProvider>
+
+----------------------------------------------------------------------------------------------------------------------------
+
+going back to Tshirt.js for the add to cart button
+    invoke the CartContext to pass the selected items
+        const[cart, setCart] = useContext(CartContext);
+        //snippet : nfn
+        const addToCart = () => {
+            //get the selected item as props from TshirtList.js the set to varialble shirt
+            const shirt = {name : props.name, price : props.price}
+            //invoke the cart from CartContext by setCart
+            setCart(currentState => [...currentState, shirt])
+        }
+    then on return, add below
+            <button onClick={addToCart}>
+                Add to cart
+            </button>
+
+
+----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
