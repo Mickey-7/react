@@ -1,0 +1,223 @@
+link : https://www.taniarascia.com/crud-app-in-react-with-hooks/
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+default directory structure :
+    => node_modules
+       public 
+       src
+        App.css
+        App.js
+        App.test.js
+        index.css
+        index.js
+        logo.svg
+        serviceWorker.js
+        setupTests.js
+--------------------------------------------------------------------------------------------------------------------------------------
+
+to create a new react app :
+    => npx create-react-app project_name
+
+create form folder, which will contain all the component forms :
+    AddUserForm.js
+    EditUserForm.js
+    UsersTableForm.js
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+snippet for functional arrow component : 
+    type : rafce
+snippet for console.log() :
+    type : cl 
+snippet for arrow function variable :
+    type : nfn→	const functionName = (params) => { }
+snippet for const varible :
+    type : dob
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+data flow
+    -----------------------------------------------------------------------------------------
+    |    App.js                                  ->          Component_Name.js              |
+    |        arrow_function_name                                 props_name                 |
+    |                                                                                       |
+    -----------------------------------------------------------------------------------------
+    |    passing as props                        ->          invoking the passed props      |
+    |        <Component_Name                                     props.props_name.          |
+    |            props_name={arrow_function_name}                                           |
+    |        />                                                                             |
+    -----------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+on App.js, create :
+    mock data :
+        // array of objects for mock data
+        const usersData = [
+            {id:1,name:"name1",username:"username1"},
+            {id:2,name:"name2",username:"username2"},
+            {id:3,name:"name3",username:"username3"},
+        ]
+    put the mock data on useState hook :
+        const [users,setUsers] = useState(usersData)
+    addUser arrow function :
+        addUser = (user) = {
+            user.id = users.lenght+1
+            setUsers([...users,user])
+        }
+    deleteUser arrow function :
+        deleteUser = (id) => {
+            //will output user with id not equal to selected id
+            setUsers(users.filter(user=>user.id!==id))
+        }
+    create blank form and useState for the user to be updated :
+        const initialFormState = {id:null,name:"",username:""}
+        const [selectedUser, setSelectedUser] = useState(initialFormState)
+    getUser arrow function, to get the user to be edited : 
+        getUser = (user) => {
+            console.log(user)
+            setSelectedUser({
+                id:user.id,
+                name:user.name,
+                username:user.username
+            })
+        }
+    editUser arrow function : 
+        editUser = (id,selUser) => {
+            setUsers(users.map(user=>(user.id===id ? selUser : user)))
+        }
+    selUser -> updated user values from EditUserForm
+    user -> user not to be updated but still on the users
+
+then return :
+    AddUserForm, EditUserForm & UsersTableForm (embedded with Delete & Edit function)
+    AddUserForm will contain the addUser arrow function 
+        <AddUserForm userAdd={addUser} />
+    UsersTableForm will contains the users, deleteUser & editUser as props
+        <UsersTableForm userstable={users} userDelete={deleteUser(user.id)} userGet={getUser}/>
+    EditUserForm will contain selectedUser as props
+        <EditUserForm userSelected={selectedUser} userEdit={editUser}/>
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+on UsersTableForm.js :
+    invoke the passed data by putting props on the () after rafce snippet :
+       const UsersTableForm = (props) => {
+    check the users from App.js passed as usersTable by props :
+        snippet is cl
+        console.log(props.usersTable)
+    display the data by iterating on tr :
+        <tbody>
+            {/* iterating on tr and invokinmg props for displaying mock data */}
+            {props.usersTable.map(user => (
+                <tr key={user.id}>
+                    <td>{user.name}</td>
+                    <td>{user.username}</td>
+                    <td>
+                        {/* invoking the userGet from app.js as props passing user */}
+                        <button onClick={()=> props.userGet(user)}>Edit</button>
+                        {/* invoking the userDelete from app.js as props passing id */}
+                        <button onClick={()=> props.userDelete(user.id)}>Delete</button>
+                    </td>
+                </tr>
+            ))}
+        </tbody>
+    Note : that props is inside {} & tr is inside () - otherwise error will occur
+         : comments are enclosed by {/*      */}
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+on AddUserForm.js :
+    generate blank user form which will contain the user details
+        const initialFormState = {id:null,name:"",usernmae:""}
+        const [user,setUser] = userState(initialFormState)
+    get the user input values from the field and set it to the user form
+        const handleInputChange = event => {
+            //get the input field property value
+            const {name,value} = event.target
+            //set the value to the form
+            //[name] pertains to name property of the input field
+            //value pertains to user input
+            setUser({...user,[name]:value})
+        }
+
+then on return :
+    make sure the input field contains name, value and onChange={handleInputChange} property
+        <input 
+            name="username" 
+            value={user.username} 
+            onChange={handleInputChange} 
+            type="text"
+        />
+    make sure the form will set the user input values from the field to the use and passed it to props
+        <form onSubmit={event => {
+                event.preventDefault();
+                setUser(initialFormState)
+                props.userAdd(user)
+            }}
+
+        />
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+on EditUserForm.js :
+    useEffect to get the selectedUser from App.js passed as userSelected via props
+        //useEffect to get the user to be edited
+        useEffect(() => {
+            setSelUser(props.userSelected)
+        }, [props.userSelected])
+
+    create useState for the seeting of the user to be updated
+        const [selUser, setSelUser] = useState(props.userSelected)
+
+    get the user input values from the field and set it to the user form
+        const handleInputChange = event => {
+            //get the input field property value
+            const {name,value} = event.target
+            //set the value to the form
+            //[name] pertains to name property of the input field
+            //value pertains to user input
+            setSelUser({...selUser,[name]:value})
+        }
+
+then on return :
+    make sure the input field contains name, value and onChange={handleInputChange} property
+        <input 
+            name="username" 
+            //invoking the value from the userSelected props
+            value={selUser.username} 
+            onChange={handleInputChange} 
+            type="text"
+        />
+    make sure the form will pass the selUser (updated user) & its id value and will clear input fields
+        <form onSubmit={event => {
+                event.preventDefault();
+                props.userEdit(selUser.id,selUser)
+                setSelUser({id:null,name:"",username:""})
+            }}
+
+        />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+then make the necessary cosmetics on App.css
+
+
+
