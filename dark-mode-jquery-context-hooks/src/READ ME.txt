@@ -1,0 +1,294 @@
+reference : https://medium.com/@batistatomeoliveira96/what-is-context-api-and-build-dark-mode-app-with-it-7eaa4929a0c6
+
+----------------------------------------------------------------------------------------------------------------------
+
+The Context API is used for the data that is considerate global such as UI theme, idiom preference and authenticated user.
+
+    Note: we will use jquery module, I assume that you already know about it and how to install in React.
+
+        npm i jquery
+
+----------------------------------------------------------------------------------------------------------------------
+
+How to create Context:
+    At first we got to create a file where our data that we assume that is global will be.
+    The importants line are commented with explanation
+
+        see DarkModeContext.js for reference
+    
+----------------------------------------------------------------------------------------------------------------------
+
+DarkModeContext.js
+
+    import React, { createContext, useState, useEffect } from "react";
+    // manual import
+    // snippet : imp + tab
+    import $ from "jquery";
+
+    //Here we create our context that is a instance of createContext class.
+    //the name must be the same as the file of the context.
+    export const DarkModeContext = createContext();
+
+    // snippet : nfn
+    export const DarkModeProvider = (props) => {
+    // that is the state that we assume to be global to our app
+    // snippet : useS
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    //when the App render, its see if what was the UI the mode
+    //  that user used at last time he choose
+    //and parse it to a state.
+    //   sniipet : useE
+    useEffect(() => {
+        const mode = JSON.parse(localStorage.getItem("isDarkMode"));
+        setIsDarkMode(mode);
+        if (mode) {
+        $(".sw").addClass("swOn");
+        } else {
+        $(".sw").removeClass("swOn");
+        }
+    }, [isDarkMode]);
+    //The Object that we created got the Property Provider that will provide
+    //   for our components the value of our context, that is
+    // a [isDarkMode, setsetIsDarkModeMode]
+    // isDarkMode is a boolean variable
+    //setIsDarkMode is the method that can change the value of the context
+    //All children component can use this Context.
+
+    return (
+        <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
+        {props.children}
+        </DarkModeContext.Provider>
+    );
+    };
+
+
+    After we created our context we can start use that adding as a container to components where we want to share its, 
+    in that case I’ll add in App.js you can add it anywhere you want depending on your needs.
+
+----------------------------------------------------------------------------------------------------------------------
+
+App.js
+
+    import React from "react";
+    import logo from "./logo.svg";
+    import "./App.css";
+    //Here we call our provider to be as container for those component that need the data
+    import { DarkModeProvider } from "./context/DarkModeContext";
+    import { Navbar } from "./components/Navbar";
+    import { Content } from "./components/Content";
+
+    function App() {
+    //As you can see all the components inside of DarkModeProvider can acess or make the use of context
+
+    return (
+        <div className="App">
+        <DarkModeProvider>
+            <Navbar />
+            <Content />
+        </DarkModeProvider>
+        </div>
+    );
+    }
+
+    export default App;
+
+
+    Note: you can create your own style of DarkMode class and add to it
+    Now we got our component inside of the DarkModeProvider, then we can start make use of the context value.
+
+----------------------------------------------------------------------------------------------------------------------
+
+Navbar.js
+
+    // snippet : rafc
+    import React, { useContext } from "react";
+    import { DarkModeContext } from "../context/DarkModeContext";
+    // manual import
+    // snippet : imp + tab
+    import $ from "jquery";
+
+    export const Navbar = () => {
+    // Here we make a use of the context Just import
+    //it and start use with useContext Hook feature of react.
+    const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
+
+    // snippet : nfn
+    const tooglemode = () => {
+        $(".sw").toogleClass("swOn");
+        //that is the method that we pass as a value of our context to help manipulate or change it.
+        // that just make a toggle of the value.
+        // At another situation you might need to compare the old value to update like:
+        // setIsDarkMode(prevValue=> ... ) that way you can acess the old value in method and change or maybe
+        // add new one
+        setIsDarkMode(!isDarkMode);
+
+        //we store our UI theme mode on localstorage
+        localStorage.setItem("isDarkMode", !isDarkMode);
+    };
+
+    const addDarkMode = () => {
+        $(".sw").addClass("swOn");
+        setIsDarkMode(true);
+        localStorage.setItem("isDarkMode", true);
+    };
+
+    const addLightMode = () => {
+        $(".sw").removeClass("swOn");
+        setIsDarkMode(false);
+        localStorage.setItem("isDarkMode", false);
+    };
+
+    // the trick of DarkMode is only a conditional style of element
+    //if it true put as Dark Mode, if not put the normal mode
+    return (
+        <div className={isDarkMode ? "navbarDark navbar" : "navbar"}>
+        <h3>React App</h3>
+
+        <div className="btnMode">
+            <span role="img" onClick={addLightMode}>
+            🌞
+            </span>
+            <div onClick={tooglemode} className="switch_toggle">
+            <div id="sw" className={isDarkMode ? "swOn sw" : "sw"}></div>
+            </div>
+            <span role="img" onClick={addDarkMode}>
+            🌚
+            </span>
+        </div>
+        </div>
+    );
+    };
+
+----------------------------------------------------------------------------------------------------------------------
+
+Content.js
+
+    // snippet: rafc
+    import React, { useContext } from "react";
+    import { DarkModeContext } from "../context/DarkModeContext";
+
+    export const Content = () => {
+    // to start use the context we just need to import the context that we created
+    // and start use with useContext trigger of reactjs
+    // snippet : useC
+    const [isDarkMode] = useContext(DarkModeContext);
+
+    // the trick of DarkMode is only a conditional style of element
+    //if it true put as Dark Mode, if not put the normal mode
+    return (
+        <div className={isDarkMode ? "contentDark content" : "content"}>
+        <h3>Hello Wolrd</h3>
+        <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem atque
+            soluta optio modi quo itaque cupiditate inventore vitae saepe odio esse
+            eos ab placeat deleniti repellat facere magni nulla, quos assumenda
+            excepturi velit doloremque fuga illum enim. Dolores reprehenderit
+            eligendi rerum odit incidunt natus voluptates nam hic in, rem
+            exercitationem.
+        </p>
+        </div>
+    );
+    };
+
+----------------------------------------------------------------------------------------------------------------------
+
+App.css
+
+    /* added manually for style  */
+    * {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .navbar {
+    width: 100%;
+    height: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5%;
+    background-color: rgb(13, 188, 194);
+    box-sizing: border-box;
+    transition: 0.5s;
+    }
+
+    .navbarDark {
+    background-color: rgb(0, 2, 27);
+    }
+
+    .navbarDark > h3 {
+    color: white;
+    }
+
+    .navbar > h3 {
+    color: white;
+    font-size: 12pt;
+    }
+
+    .btnMode {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    }
+
+    .btnMode > span {
+    cursor: default;
+    }
+
+    .switch_toggle {
+    width: 40px;
+    height: 10px;
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 2px;
+    margin-right: 2px;
+    }
+
+    .sw {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin-top: -14%;
+    background-color: rgb(196, 193, 31);
+    transition: 0.5s;
+    }
+
+    .swOn {
+    margin-left: 53%;
+    background-color: rgb(39, 39, 35);
+    }
+
+    .content {
+    width: 100%;
+    height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 25px;
+    transition: 0.5s;
+    }
+
+    .contentDark {
+    background-color: rgb(19, 18, 18);
+    color: white;
+    }
+
+    .content > p {
+    margin-top: 30px;
+    text-align: center;
+    }
+
+----------------------------------------------------------------------------------------------------------------------
+
+The context API can be used for a lot of stuffs and you can combine with other state manegament tool.
+
+----------------------------------------------------------------------------------------------------------------------
