@@ -1,0 +1,243 @@
+reference link :
+    https://reacttraining.com/react-router/web/guides/quick-start
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+to create a new react app :
+    => npx create-react-app project_name
+
+to install routing :
+    => npm i react-router-dom
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+default directory structure :
+    => node_modules
+       public 
+       src
+        App.css
+        App.js
+        App.test.js
+        index.css
+        index.js
+        logo.svg
+        serviceWorker.js
+        setupTests.js
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+then create components :
+    => create new File :
+        Component1.js 
+    => for snippet, type : rfce 
+        this will generate boiler plate code for Functional component
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+on App.js :
+    => import {Route,Link,BrowserRouter} from 'react-router-dom';
+
+    => then on return, invoke the routing path and the components
+            <BrowserRouter>
+                <Route exact path="/comp1" component={Component1}/>
+                <Route exact path="/comp2" component={Component2}/>
+            </BrowserRouter>
+        manually add the path on URL web browser to test
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+    => adding navigation Link
+            <BrowserRouter>
+                <ul>
+                    <li>
+                        <Link to="/comp1">Component1</Link>
+                    </li>
+                    <li>
+                        <Link to="/comp2">Component2</Link>
+                    </li>
+                </ul>
+                <hr></hr>
+                <Route exact path="/comp1" component={Component1}/>
+                <Route exact path="/comp2" component={Component2}/>
+            </BrowserRouter>
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+    all comments are enclosed by :
+        {/*       */}
+    
+    => adding 404 Pages
+        create a NotFoundPage component first then invoke it on the Route after
+            <BrowserRouter>
+            <ul>
+                <li>
+                    <Link to="/comp1">Component1</Link>
+                </li>
+                <li>
+                    <Link to="/comp2">Component2</Link>
+                </li>
+            </ul>
+            <hr></hr>
+            {/* invoking Switch */}
+            <Switch>
+                <Route exact path="/comp1" component={Component1}/>
+                <Route exact path="/comp2" component={Component2}/>
+
+                {/* for 404 Page */}
+                <Route component={NotFoundPage} />
+            </Switch>
+            </BrowserRouter>
+
+ --------------------------------------------------------------------------------------------------------------------------------------
+
+    => adding URL Parameters
+        create Users.js that will return Link for particular user &
+        Route for the chosen id of the user 
+            <BrowserRouter>
+            <ul>
+                <li>
+                    <Link to="/comp1">Component1</Link>
+                </li>
+                <li>
+                    <Link to="/comp2">Component2</Link>
+                </li>
+                
+                <br></br>
+                for URL Parameter
+                <li>
+                    <Link to="/users">Users</Link>
+                </li>
+            </ul>
+            <hr></hr>
+            {/* invoking Switch */}
+            <Switch>
+                <Route exact path="/comp1" component={Component1}/>
+                <Route exact path="/comp2" component={Component2}/>
+
+                {/* no need to put exact - cause it will not render the components inside of it */}
+                {/* this took many fucking hours!!!!!!! */}
+                <Route  path="/users" component={Users}/>
+
+                {/* for 404 Page */}
+                <Route component={NotFoundPage} />
+
+            </Switch>
+        
+        then the return on Users.js 
+                <div>
+                <h3>Users List</h3>
+                    <ul>
+                        <li>
+                            <Link to="users/1">User 1</Link>
+                        </li>
+                        <li>
+                            <Link to="users/2">User 2</Link>
+                        </li>
+                        <li>
+                            <Link to="users/3">User 3</Link>
+                        </li>
+                    </ul>
+                </div>
+        notice the changes in URL of web browser
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+    => Nested Routing : https://reacttraining.com/react-router/web/example/nesting
+        path 
+            The path pattern used to match. Useful for building nested <Route>s
+        url
+            The matched portion of the URL. Useful for building nested <Link>s
+            
+        create User.js which will be renderred once we click any user on Users.js
+            <BrowserRouter>
+            <ul>
+                <li>
+                    <Link to="/comp1">Component1</Link>
+                </li>
+                <li>
+                    <Link to="/comp2">Component2</Link>
+                </li>
+                
+                <br></br>
+                for URL Parameter
+                <li>
+                    <Link to="/users">Users</Link>
+                </li>
+            </ul>
+            <hr></hr>
+            {/* invoking Switch */}
+            <Switch>
+
+                <Route exact path="/comp1" component={Component1}/>
+                <Route exact path="/comp2" component={Component2}/>
+
+                {/* no need to put exact - cause it will not render the components inside of it */}
+                {/* this took many fucking hours!!!!!!! */}
+                <Route  path="/users" component={Users}/>
+
+                {/* for 404 Page */}
+                <Route component={NotFoundPage} />
+
+            </Switch>
+            </BrowserRouter>
+        same as from URL Parameter above
+
+    then on Users.js :
+        declare below then return below :
+            // The `path` lets us build <Route> paths that are relative to the parent route, 
+            // while the `url` lets us build relative links.
+            let { path, url } = useRouteMatch();
+
+            <div>
+                <h2>Topics</h2>
+                <ul>
+                <li>
+                    <Link to={`${url}/1`}>User 1 </Link>
+                </li>
+                <li>
+                    <Link to={`${url}/2`}>User 2 </Link>
+                </li>
+                <li>
+                    <Link to={`${url}/3`}>User 3 </Link>
+                </li>
+                </ul>
+        
+                <Switch>
+                <Route exact path={path}>
+                    <h3>Please select user</h3>
+                </Route>
+
+                <Route path={`${path}/:userId`}>
+                    <User />
+                </Route>
+                </Switch>
+            </div>
+
+        finally on User.js :
+            return the selected userId that was passed from Users.js
+            by using useParams() like below :
+                // The <Route> that rendered this component has a
+                // path of `/users/:userId`. The `:userId` portion
+                // of the URL indicates a placeholder that we can
+                // get from `useParams()`.
+                let { userId } = useParams();
+
+                return (
+                    <div>
+                    <h3>{userId}</h3>
+                    </div>
+                );
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
