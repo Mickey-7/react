@@ -1,0 +1,13 @@
+.container{
+  display: grid;
+  grid-template-columns: repeat(2,minmax(240px,1fr));
+
+}
+
+th{
+  padding: 10px 10px;
+}
+
+body{
+  padding: 0px 15px;
+}
