@@ -1,0 +1,4 @@
+/* make height consumed view height */
+.view {
+  height: 95vh;
+}

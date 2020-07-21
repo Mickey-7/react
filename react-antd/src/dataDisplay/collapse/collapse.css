@@ -1,0 +1,23 @@
+.bg {
+  /* padding: 0px 24px 0px; */
+  /* the spacing happened inside the Collpase
+  so we will use margin instead */
+  /* using auto will make it center!!!!!!! */
+  margin: auto;
+  width: 700px;
+  background-color: rgb(184, 180, 180);
+}
+
+p {
+  color: #000;
+}
+
+.bgn {
+  /* padding: 0px 24px 0px; */
+  /* the spacing happened inside the Collpase
+    so we will use margin instead */
+  /* using auto will make it center!!!!!!! */
+  margin: auto;
+  width: 650px;
+  background-color: rgb(184, 180, 180);
+}

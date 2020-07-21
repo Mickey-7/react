@@ -1,0 +1,72 @@
+intallation reference : https://ant.design/docs/react/introduce#Installation
+
+    npm i antd
+
+usage : 
+
+    disable StrictMode on index.js 
+        (for the mean time to see antd effects but not advisable)
+
+    ReactDOM.render(
+        // removing the StrictMode for the mean
+        // time so that the antd will take effect
+        // <React.StrictMode>
+        <App />,
+        // </React.StrictMode>,
+        document.getElementById("root")
+    );
+
+    And import stylesheets manually:
+
+    import React from "react";
+    import logo from "./logo.svg";
+    import "./App.css";
+    //
+    import { Button } from "antd";
+    import "antd/dist/antd.css";
+
+    function App() {
+        return (
+            <div className="App">
+            <Button type="primary">Primary</Button>
+            <Button>Default</Button>
+            <Button type="dashed">Dashed</Button>
+            <Button type="link">Link</Button>
+            </div>
+        );
+    }
+
+    export default App;
+
+----------------------------------------------------------------------------------------------------------------
+
+to install routing :
+    => npm i react-router-dom
+        for layout component - sidenav
+
+----------------------------------------------------------------------------------------------------------------
+
+for the css file to take effect, must be imported for that component
+
+    on ButtonComponent.js
+        // for css file
+        import "./ButtonComponent.css";     
+
+----------------------------------------------------------------------------------------------------------------
+
+component reference : https://ant.design/components/button/
+
+----------------------------------------------------------------------------------------------------------------
+
+Layout Content must be inside Layout Sider - LayoutComp.js
+
+    some of the components used
+        Layout
+        Button
+        Icon
+        Anchor
+        Carousel
+        Collapse
+        Grid
+        Card
+

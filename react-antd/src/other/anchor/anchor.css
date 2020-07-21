@@ -1,0 +1,10 @@
+h3,
+p {
+  color: blanchedalmond;
+}
+
+/* built-in on ant design */
+/* to make the anchor elevate */
+.code-box-demo .ant-affix {
+  z-index: 11;
+}

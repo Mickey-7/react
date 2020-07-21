@@ -1,0 +1,9 @@
+.spaces {
+  /* padding-left: 24px; */
+  /* above padding is not workling so try margin */
+  margin: 5px 24px 5px;
+}
+
+h3 {
+  margin: 24px 24px 10px;
+}
