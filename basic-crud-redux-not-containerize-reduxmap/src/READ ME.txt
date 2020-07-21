@@ -1,0 +1,332 @@
+npm install redux react-redux
+-----------------------------------------------------------------------------------------------------------------------------------
+create redux folder:
+-----------------------------------------------------------------------------------------------------------------------------------
+
+    action.js 
+        snippet : rxconst → export const $1 = '$1'
+            export default ACTION_NAME = "ACTION_NAME"
+        snippet : rxaction → redux action template
+            set type to ACTION_NAME & payload to whatever parameter is need
+            then remove the () after => and put the type & payload inside return {}
+                export const action_name = (payload) => ({
+                    type: type,
+                    payload 
+                })
+        final form :
+                export const addUser = (user) => {
+                    return {
+                        type: ADD_USER,
+                        payload: user 
+                    }
+                }
+        the type and payload parameter above corresponds 
+        to the type and payload paramter from the reducer.js   
+
+-----------------------------------------------------------------------------------------------------------------------------------
+    
+    reducer/redux.js 
+        snippet : imp + tab
+            import {ACTION_NAME} from '../action';
+        snippet : rxreducer → redux reducer template
+            create mock data inside initialState
+            on the boiler plate code generated,
+            remove default after export and then
+            put UserReducer = after export 
+                export const UserReducer = (state = initialState, { type, payload }) => {
+            the type and payload parameter above corresponds 
+            to the type and payload paramter from the action.js  
+            set cases as actions 
+                case ACTION_NAME:
+                    code the necessary logic
+        snippet : exp + tab
+            then export the UserReducer
+                export default UserReducer
+
+    reducer/index.js
+        import combineReducers from redux
+        import UserReducer (from above) to index.js
+            import {combineReducers} from 'redux';
+            import UserReducer from './reducer';
+        then include UserReducer on combineReducers
+            const rootReducer = combineReducers({
+                var_name : UserReducer
+            })
+        then, snippet : exp + tab 
+            export default rootReducer;
+
+-----------------------------------------------------------------------------------------------------------------------------------
+    
+    store.js
+        import createStore from redux
+        import rootReducer (index.js) from reducer
+            import {createStore} from 'redux';
+            import rootReducer from '../redux/reducer';
+        use createStore and put the rootReducer inside
+            const store = createStore(rootReducer);
+        then, snippet : exp + tab
+            export default store;
+
+-----------------------------------------------------------------------------------------------------------------------------------
+   
+    index.js
+        import Provider and the store
+        snippet : redux -> then change connect to Provider
+            import { Provider } from 'react-redux';
+            import store from './redux/store';
+        invoke the Provider & store on the ReactDOM
+            ReactDOM.render(
+                <Provider store={store}>
+                    <React.StrictMode>
+                    <App />
+                    </React.StrictMode>
+                </Provider>,
+                document.getElementById('root')
+            );
+
+-----------------------------------------------------------------------------------------------------------------------------------
+    
+    App.js
+        //blank useState for the user to be updated
+            const [selectedUser, setSelectedUser] = useState({id:null,name:"",username:""})
+        //setting the selected user to the user to be updated
+            const getUser = (user) => {
+                setSelectedUser({
+                id:user.id,
+                name:user.name,
+                username:user.username,
+                })
+            }
+
+        then return all the components with corresponding passing of data needed
+            <div>
+                <h3>User Management Using Redux</h3>
+                <div className="container">
+                    <div>
+                    <AddUserForm/>
+                    <br></br>
+                    {/* invoking the user to be updated */}
+                    <EditUserForm selectUser={selectedUser}/>
+                    </div>
+
+                    <div>
+                    {/* invoking the user to be updated */}
+                    <UserTableForm userGet={getUser}/>
+                    </div>
+                </div>
+            </div>
+
+-----------------------------------------------------------------------------------------------------------------------------------
+create component folder :
+-----------------------------------------------------------------------------------------------------------------------------------
+    
+    UserTableForm.js
+        snippet : rafce
+            get the userList from UserTableContainer as props then iterate
+                {
+                    props.userList.map(user => (
+                        <tr key={user.id}>
+                            <td>{user.name}</td>
+                            <td>{user.username}</td>
+                            <td>
+                                <button>Edit</button>
+                                <button>Delete</button>
+                            </td>
+                        </tr>
+                    ))
+                }
+            invoking the DELETE_ACTION from action.js as props via UserTableContainer
+                onClick={()=>props.userDelete(user.id)}
+            invoking the GET_USER_ACTION from action.js as props via UserTableContainer
+                onClick={()=>props.getUser(user)}
+
+        snippet : reduxmap
+            const mapStateToProps = state => ({})
+                remove the () after => arrow
+                    const mapStateToProps = (state) => {
+                then return the mock data from UserReducer (reducer.js).rootReducer (index.js)
+                    UserReducer -> state, rootReducer -> var_name on index.js
+                        var_name : state.var_name on index.js
+                final form: 
+                    const mapStateToProps = (state) => {
+                        console.log(state);
+                        return {
+                            userList : state.user
+                        }
+                    }
+            const mapDispatchToProps = {}
+                put dispatch => after =
+                    const mapDispatchToProps = dispatch => {
+                return bindActionCreators with action from action.js
+                    return bindActionCreators(
+                        {
+                            userDelete : deleteUser
+                        },
+                        //this is important!!!!!!!
+                        //also take note of the place 
+                        //where it was put!!!!!!!
+                        dispatch
+                    )   
+                deleteUser  was imported from action.js
+                import {deleteUser} from '../redux/action'
+                also, dont forget the dispatch after within return!!!!!!!  
+
+            exp + tab then invoke the component :
+                export default connect(
+                    mapStateToProps,
+                    mapDispatchToProps
+                )(UserTableForm)
+
+-----------------------------------------------------------------------------------------------------------------------------------
+    
+    AddUserForm.js 
+        snippet : rafce
+            create blank initialForm & useState for the new user
+                const initialForm = {id:null,name:"",username:""}
+                const [userNew, setUserNew] = useState(initialForm)
+
+            make sure that the input fields contains name, value & onChange as properties
+                <input 
+                    name="name"
+                    value={userNew.name}
+                    onChange={handleInputChange}
+                    type="text"
+                />
+        
+            define handleInputChange which will gather the user inputs
+                const handleInputChange = (event) => {
+                    //snippet : dob
+                    const {name,value} = event.target
+
+                    setUserNew({...userNew,[name]:value});
+
+                    console.log(userNew);
+                }
+
+            make sure form contains onSubmit which includes event.preventDefault(),
+            props from AddUserContainer & setUserNew for clearing input fields
+                <form
+                    onSubmit={event=>{
+                        event.preventDefault();
+                        props.userAdd(userNew)
+                        //clear input fields
+                        setUserNew(initialForm)
+                    }}
+                >
+        
+        snippet : reduxmap
+            const mapStateToProps = state => ({})
+                remove the function below as it is not needed
+
+            const mapDispatchToProps = {}
+                put dispatch => after =
+                    const mapDispatchToProps = dispatch => {
+                return bindActionCreators with action from action.js
+                    return bindActionCreators(
+                        {
+                            userAdd : addUser
+                        },
+                        //this is important!!!!!!!
+                        //also take note of the place 
+                        //where it was put!!!!!!!
+                        dispatch
+                    )      
+            addUser was imported from action.js
+                import {addUser} from '../redux/action'
+            also, dont forget the dispatch after within return!!!!!!!  
+        
+            exp + tab, then export AddUserContainer  
+                export default connect(
+                    null,
+                    mapDispatchToProps
+                )(AddUserForm)
+
+-----------------------------------------------------------------------------------------------------------------------------------
+    
+    EditUserForm.js
+        snippet : rafce
+            //useState to get the selected user
+                const [selectedUser, setSelectedUser] = useState(props.selectUser)
+            // useEffect to set the selected user as props
+                useEffect(() => {
+                    setSelectedUser(props.selectUser)
+                }, [props.selectUser])
+
+
+            make sure that the input fields contains name, value & onChange as properties
+                <input 
+                    name="name"
+                    value={selectedUser.name}
+                    onChange={handleInputChange}
+                    type="text"
+                />
+        
+            define handleInputChange which will gather the user inputs
+                const handleInputChange = (event) => {
+                    //snippet : dob
+                    const {name,value} = event.target
+
+                    setUserNew({...selectedUser,[name]:value});
+
+                    console.log(userNew);
+                }
+
+            make sure form contains onSubmit which includes event.preventDefault(),
+            props from AddUserContainer & setUserNew for clearing input fields
+                <form
+                    onSubmit={event=>{
+                        event.preventDefault();
+                        props.userEdit(selectedUser)
+                        //clear input fields
+                        setSelectedUser({id:null,name:"",username:""})
+                    }}
+                >
+
+        snippet : reduxmap
+            const mapStateToProps = state => ({})
+                remove the function below as it is not needed
+
+            const mapDispatchToProps = {}
+                put dispatch => after =
+                    const mapDispatchToProps = dispatch => {
+                return bindActionCreators with action from action.js
+                    return bindActionCreators(
+                        {
+                            userEdit : editUser
+                        },
+                        //this is important!!!!!!!
+                        //also take note of the place 
+                        //where it was put!!!!!!!
+                        dispatch
+                    )      
+            editUser was imported from action.js
+                import {editUser} from '../redux/action'
+            also, dont forget the dispatch after within return!!!!!!!  
+        
+            exp + tab, then connect EditUserForm
+                export default connect(
+                    null,
+                    mapDispatchToProps
+                )(EditUserForm)
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+data flow : use snippet : cl for console.log() debugging!
+
+    app.js <-> component (container)
+                |
+                | -----> action 
+                |          /|\
+                |           |
+                |          \|/
+                | -----> reducer      
+
+    the onClick={()=>props.userGet(user)} on UserTableForm was bypassed on the reduxmap
+        and directly used in EditUsertForm of App.js as props to get user to be updated 
+    
+    like the normal way of passing props & data
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+
