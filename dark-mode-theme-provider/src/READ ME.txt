@@ -1,0 +1,138 @@
+reference :https://css-tricks.com/a-dark-mode-toggle-with-react-and-themeprovider/
+
+-------------------------------------------------------------------------------------
+
+In this tutorial, 
+    we’re going to build a toggle that allows users to switch between light and dark modes, 
+    using a <ThemeProvider wrapper from the styled-components library. 
+    
+    We’ll create a useDarkMode custom hook, which supports the prefers-color-scheme 
+    media query to set the mode according to the user’s OS color scheme settings.
+
+    If that sounds hard, I promise it’s not! Let’s dig in and make it happen.
+
+    To install styled-components, in your terminal run 
+    
+        npm install styled-components.
+
+    Next thing to do is create two files. 
+    The first is global.js, which will contain our base styling, 
+    and the second is theme.js, which will include variables for 
+    our dark and light themes:    
+
+-------------------------------------------------------------------------------------
+
+// Theme.js
+    export const lightTheme = {
+    body: '#E2E2E2',
+    text: '#363537',
+    toggleBorder: '#FFF',
+    gradient: 'linear-gradient(#39598A, #79D7ED)',
+    }
+
+    export const darkTheme = {
+    body: '#363537',
+    text: '#FAFAFA',
+    toggleBorder: '#6B8096',
+    gradient: 'linear-gradient(#091236, #1E215D)',
+    }
+
+-------------------------------------------------------------------------------------
+
+// GlobalStyles.js
+    // Source: https://github.com/maximakymenko/react-day-night-toggle-app/blob/master/src/global.js#L23-L41
+
+    import { createGlobalStyle } from 'styled-components';
+
+    export const GlobalStyles = createGlobalStyle`
+    body {
+        align-items: center;
+        background: ${({ theme }) => theme.body};
+        color: ${({ theme }) => theme.text};
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        transition: all 0.25s linear;
+    }
+
+-------------------------------------------------------------------------------------
+
+Go to the App.js file. 
+    We’re going to delete everything in there and add the layout for our app.
+    Here’s what I did:
+
+    import React, { useState, useEffect } from "react";
+    import logo from "./logo.svg";
+    import "./App.css";
+    import { lightTheme, darkTheme } from "./theme/Theme";
+    import { GlobalStyles } from "./global/GlobalStyles";
+    import { ThemeProvider } from "styled-components";
+
+    function App() {
+    // snippet : useS
+    const [theme, setTheme] = useState("light");
+
+    // snippet : nfn
+    const toggleTheme = () => {
+        if (theme === "light") {
+        setTheme("dark");
+        } else {
+        setTheme("light");
+        }
+    };
+
+    return (
+        <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+        <GlobalStyles />
+        <button onClick={toggleTheme}>Toggle theme</button>
+        <h3>It's a light theme!</h3>
+        <footer></footer>
+        </ThemeProvider>
+    );
+    }
+
+    export default App;
+
+    This imports our light and dark themes. 
+    The ThemeProvider component also gets imported and 
+    is passed the light theme (lightTheme) styles inside. 
+    We also import GlobalStyles to tighten everything up in one place.
+
+-------------------------------------------------------------------------------------
+
+Now, the toggling functionality
+    There is no magic switching between themes yet, 
+    so let’s implement toggling functionality. 
+    We are only going to need a couple lines of code to make it work.
+
+    First, import the useState hook from react:
+
+    // App.js
+    import React, { useState } from 'react';
+
+    Next, use the hook to create a local state which
+    will keep track of the current theme and add a 
+    function to switch between themes on click:
+
+
+    // snippet : useS
+    const [theme, setTheme] = useState("light");
+
+    // snippet : nfn
+    const toggleTheme = () => {
+        if (theme === "light") {
+        setTheme("dark");
+        } else {
+        setTheme("light");
+        }
+    };
+
+    After that, all that’s left is to pass this function to our 
+    button element and conditionally change the theme. Take a look:
+
+-------------------------------------------------------------------------------------
+
