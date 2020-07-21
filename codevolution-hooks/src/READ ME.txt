@@ -1,0 +1,269 @@
+reference : https://www.youtube.com/watch?v=lAW1Jmmr9hc&list=PLC3y8-rFHvwisvxhZ135pogtX7_Oe3Q3A&index=2
+
+------------------------------------------------------------------------------------------------------------------------
+
+steps to implement useState - Hooks 
+    1.create HookCounter.js (snippet : rafce)
+    2.setInitialValue to 0 using useState()
+    3.create onClick method to change value when counting 
+    4.call the HookCounter.js on App.js
+
+    1.create HookCounterTwo.js (snippet : rafce)
+    2.setInitialValue to 0 using useState()
+    3.create onClick method to change value when counting 
+    4.call the HookCounter.js on App.js
+        using prevCount value on method to get previous state value
+
+    1.create HookCounterThree.js (snippet : rafce)
+    2.setInitialValue to 0 using useState()
+    3.create onClick method to change value when counting 
+    4.call the HookCounter.js on App.js
+        using ... spread operator for object to merge obecjt field values
+
+    1.create HookCounterThree.js (snippet : rafce)
+    2.setInitialValue to 0 using useState()
+    3.create onClick method to change value when counting 
+    4.call the HookCounter.js on App.js
+        using it on array of objects
+
+------------------------------------------------------------------------------------------------------------------------
+
+encounter error :
+
+    ./src/HookCounterFour.js
+    Line 31:13:  Expected an assignment or function call and instead saw an expression  no-unused-expressions
+
+    Search for the keywords to learn more about each error.
+
+solution :
+
+    on 
+        {
+          // invoke the items which is an array type
+          items.map((item) => {
+            <li key={item.id}>{item.value}</li>;
+          })
+        }
+
+    change the {} after => to (), like below :
+
+        {
+          // invoke the items which is an array type
+          items.map((item) => (
+            <li key={item.id}>{item.value}</li>;
+          ))
+        }
+
+------------------------------------------------------------------------------------------------------------------------
+
+steps to implement useEffect - Hooks
+    1.create HookCounterOneWith_useEffect.js (snippet : rafce)
+    2.setInitialValue to 0 using useState()
+    3.set the document title using useEffect()
+    4.create onClick method to change value when counting 
+    5.call the HookCounter.js on App.js
+        executed after every render
+
+    1.create HookCounterTwoWith_useEffect.js (snippet : rafce)
+    2.setInitialValue of name to "" - useState("")
+    3.include console.log to check whenever useEffect is being executed
+    4.invoke the [name] on the input field to see the effect on console
+    5.call the HookCounter.js on App.js
+    6.notice on console the log is render whenever we have changes on name
+        conditionally run effects 
+            - listen to specific [var] if it is changing
+
+    1.create HookCounterThreeWith_useEffect.js (snippet : rafce)
+    2.setInitialValues of x & y to 0 using useState(0)
+    3.invoke window.addEventListener() on useEffect() to see effect on console
+    4.invoke the x & y values on the JSX
+    5.call the HookCounter.js on App.js
+    6.notice on console the log from useEffect is rendered only once
+        run effects only once - []     
+
+    1.create HookCounterFourWith_useEffect.js (snippet : rafce)
+    2.setInitialValue of display to true useState(true)
+    3.invoke display on JSX at button
+    4.invoke also display && HookCounterThreeWith_useEffect.js component
+    5.add return on useEffect() on the included component HookCounterThreeWith_useEffect.js
+        //added for HookCounterFourWith_useEffect.js only
+        return () => {
+            console.log("component removing event listener code");
+            window.removeEventListener("mousemove", logMousePosition);
+        };
+    6.call the HookCounterFourWith_useEffect.js on App.js
+    7.notice on console the log from useEffect is rendered only once
+        useEffect with cleanup - invoking button to remove event listener
+            - remove the event listener by including return on useEffect 
+              of the included component once button is clicked
+
+
+    1.create HookCounterFiveWith_useEffect.js (snippet : rafce)
+    2.setInitialValue of count to 0 useState(0)
+    3.invoke count on JSX 
+    4.create tick the increments count using setCount()
+    5.on useEffect() create const interval the set it on created tick
+      also return the clearInterval
+        return () => {
+            clearInterval(interval)
+        };
+    5.call the HookCounterFiveWith_useEffect.js on App.js
+        more application example for useEffect()
+    
+------------------------------------------------------------------------------------------------------------------------
+
+install axios, type pn terminal : npm i axios 
+
+------------------------------------------------------------------------------------------------------------------------
+
+steps to implement fetch data using useEffect() & axios
+    1.create dataFetching.js snippet : rafce
+    2.go to https://jsonplaceholder.typicode.com scroll then click /posts 
+      and copy the url https://jsonplaceholder.typicode.com/posts
+    3.setInitialValue of posts to [] useState([])
+    4.invoke the axios on useEffect() like below
+        useEffect(() => {
+            Axios.get("https://jsonplaceholder.typicode.com/posts")
+                .then(res => {
+                    console.log(res);
+                    setPosts(res.data)
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        },[])
+    5.render on JSX as ul
+    6.invoke on App.js
+        -fetch all data
+
+    
+    1.create DataFetching1.js snippet : rafce
+    2.go to https://jsonplaceholder.typicode.com scroll then click /posts 
+      and copy the url https://jsonplaceholder.typicode.com/posts
+    3.setInitialValue of post to [] useState({})
+    4.setInitialValue of id to 1 useState(1)
+    5.invoke the axios on useEffect() like below
+        useEffect(() => {
+            Axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`)
+                .then(res => {
+                    console.log(res);
+                    setPosts(res.data)
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        },[id])
+    6.render on JSX input with value={id} and onChange={() => setId(e.target.value)}
+    7.render on JSX div {post.title}
+    8.invoke on App.js
+        -fecth specific data 
+
+
+    1.create DataFetching2.js snippet : rafce
+    2.go to https://jsonplaceholder.typicode.com scroll then click /posts 
+      and copy the url https://jsonplaceholder.typicode.com/posts
+    3.setInitialValue of post to [] useState({})
+    4.setInitialValue of id to 1 useState(1)
+    5.setInitialValue of idFromButtonClick to 1 useState(1)
+    6.create handleClick() method and invoke setIdFromButtonClick(id)
+    7.invoke the axios on useEffect() like below
+        useEffect(() => {
+            Axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`)
+                .then(res => {
+                    console.log(res);
+                    setPosts(res.data)
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        },[idFromButtonClick])
+    8.render on JSX input with value={id} and onChange={() => setId(e.target.value)}
+    9.invoke button on JSX and handleClick() method triggered by onClick
+    10.render on JSX div {post.title}
+    11.invoke on App.js
+        -fecth specific data with button
+
+------------------------------------------------------------------------------------------------------------------------
+
+steps to implement useContext - Hooks
+    App -> ContextC -> ContextE -> ContextF
+        passing value from App to ContextF
+    1.create ContextC.js snippet : rafce
+    2.create ContextE.js snippet : rafce
+    3.create ContextF.js snippet : rafce
+    4.invoke on JSX of App the ContextC
+    5.invoke on JSX of ContextC the ContextE
+    6.invoke on JSX of ContextE the ContextF
+    7.on App, create context then use it to get 
+      Provider and wrap ContextC snd pass the value
+    8.on JSX ContextF, invoke Consumer of UserContext and 
+      return the value on the div inside {} using arrow function
+        - simple Context demo
+
+    continuation :
+    App -> ContextC -> ContextE
+        passing value from App to ContextE
+    9.on App, create context again then use it to 
+      get Provider and wrap ContextC and pass the value
+    10.create const user and channel on ContextE 
+       as storage for the values passed from App 
+       using useContext(UserContext) & 
+       useContext(ChannelContext) on  ContextE
+    11.render {user} - {channel} on ContextE JSX
+    
+------------------------------------------------------------------------------------------------------------------------
+
+steps to implement useReducer(reducer, InitialValue, init) - Hooks
+    1.Create CounterOne.js
+    2.cerate const initialState to 0
+    3.create const reducer with state & 
+      action as input param - snippet : nfn
+    4.invoke useReducer() with reducer & initialState 
+    5.invoke on JSX the state & dispatch on onClick
+    6.import on App.js
+        - basic useReducer()
+
+    1.Create CounterTwo.js
+    2.cerate const initialState nad set
+      firstCounter to 0 & secondCounter to 10 
+      const initialState = {
+          firstCounter : 0
+      }
+    3.create const reducer with state & action as input param 
+      - snippet : nfn & snippet : switch
+        invoke type on switch - switch(action.type)
+        invoke the firstCounter & value on return 
+        return { firstCounter: state.firstCounter + 1 };
+    4.invoke useReducer() with reducer & initialState 
+      const[state, dispathc] = useReducer(reducer, initialState, init)
+      state : initialState & dispatch : reducer
+    5.invoke on JSX the state.firstCounter & dispatch with type inside on onClick
+    6.import on App.js
+    7.add another property on
+        - added data on useReducer()
+
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------
